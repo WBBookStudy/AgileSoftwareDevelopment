@@ -28,7 +28,7 @@ struct Circle : public Shape {
   double itsRadius;
 };
 
-struct Circle : public Shape {
+struct Square : public Shape {
   Square() : Shape(square) {
   }
   void Draw() const
