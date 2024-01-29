@@ -253,8 +253,46 @@ PersistentSet과 PersistentObject가 전부 애플리케이션에 알려지지�
 하지만 PersistentObject에서 파생되지 않은 객체를 PersistentSet에 추가할 수 있게 만들 수는 없다.  
 
 ## 파생 대신 공통 인자 추출하기
+다음 Line과 LineSegment의 예를 보자.  
+```CPP
+#ifdef GEOMETRY_LINE_H
+#define GEOMETRY_LINE_H
+#include "geometry/point.h"
 
+class Line {
+  public :
+    Line(const Point& p1, const Point& p2);
+    double GetSlope() const
+    double GetIntercept() const    //Y절편(선이 Y축을 지나는 지점)
+    Point GetP1() const{
+      return itsP1;
+    }
+    Point GetP2() const{
+      return itsP2;
+    }
+    virtual bool IsOn(const Point &) const
 
+  private :
+    Point itsP1;
+    Point itsP2;
+};
+#endif
+```
+```CPP
+#ifdef GEOMETRY_LINESEGMENT_H
+#define GEOMETRY_LINESEGMENT_H
+
+class lineSegment : public Line {
+  public :
+    lineSegment(const Point& p1, const Point& p2);
+    double GetLength() const
+    virtual bool IsOn(const Point&) const
+};
+#endif
+```
+이 두 클래스가 자연스러운 공용 상속의 후보처럼 보이지만, lineSegment는 Line에 선언된 모든 멤버 변수, 멤버 함수를 필요로 한다.  
+그리고 lineSegment에서는 고유의 멤버 함수인 GetLength가 추가되었고 IsOn 함수를 오버리이드한다.  
+하지만 이 두 클래스도 미묘한 방식으로 LSP를 위반하는데, Line의 사용자는 당연히 직선상의 모든 점이 이 안에 포함되기를 기대한다.  
 
 
 ## 휴리스틱과 규정
