@@ -46,8 +46,7 @@ void DrawShape(const Shape& s) {
 이 코드의 DrawShape 함수는 OCP를 위반하는데, 이 함수는 Shape 클래스의 모든 가능한 파생 클래스를 알아야 하고, Shape의 새로운 파생 클래스가 생길때마다 변경 되어야 한다.  
 이 함수의 구조는 좋지 않은 설계인데 무엇이 프로그래머로 하여금 이런 함수를 작성하게 만드는 걸까?  
 프로그래머는 객체 지향 기술을 공부하고 다형성의 부하가 지나치게 크다는 결론에 도달하는데, 그래서 아무 가상함수도 포함하지 않는 Shape 클래스를 정의했다.  
-Square와 Circle 구조체는 Shape에서 파생되고 Draw() 함수를 갖지만, Shape에있는 함수를 오버라이드 하지 않는다.  
-Square와 Circle이 Shape를 대체할 수 없기에, DrawShape는 인자로 받는 Shape를 검사하고, 형을 결정하고 나서, 적절한 Draw 함수를 호출해야 한다.  
+Square와 Circle 구조체는 Shape에서 파생되고 Draw() 함수를 갖지만, Shape에있는 함수를 오버라이드 하지 않고, Square와 Circle이 Shape를 대체할 수 없기에, DrawShape는 인자로 받는 Shape를 검사하고, 형을 결정하고 나서, 적절한 Draw 함수를 호출해야 한다.  
 Square와 Circle이 Shape를 대체할 수 없다는것은 LSP 위반이며, 이 위반은 DrawShape의 OCP 위반을 유발한다. ***그러므로 LSP 위반은 잠재적인 OCP 위반이다.***  
 
 ## 정사각형과 직사각형, 좀 더 미묘한 위반
