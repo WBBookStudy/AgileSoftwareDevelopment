@@ -256,7 +256,7 @@ PersistentSet과 PersistentObject가 전부 애플리케이션에 알려지지�
 다음 Line과 LineSegment의 예를 보자.  
 > geometry/line.h
 ```CPP
-#ifdef GEOMETRY_LINE_H
+#ifndef GEOMETRY_LINE_H
 #define GEOMETRY_LINE_H
 #include "geometry/point.h"
 
@@ -281,7 +281,7 @@ class Line {
 ```
 > geometry/lineseg.h
 ```CPP
-#ifdef GEOMETRY_LINESEGMENT_H
+#ifndef GEOMETRY_LINESEGMENT_H
 #define GEOMETRY_LINESEGMENT_H
 
 class lineSegment : public Line {
@@ -308,7 +308,7 @@ Line과 LineSegment의 예 에는 객체지향설계의 중요한 수단을 보�
 다음은 두 클래스에서 공통 인자를 추출하여 기반 클래스 LinearObject로 만든 것을 보여준다.  
 > geometry/linearobj.h
 ```CPP
-#ifdef GEOMETRY_LINE_OBJECT_H
+#ifndef GEOMETRY_LINE_OBJECT_H
 #define GEOMETRY_LINE_OBJECT_H
 #include "geometry/point.h"
 
@@ -335,7 +335,7 @@ class LinearObject {
 ```
 > geometry/line.h
 ```CPP
-#ifdef GEOMETRY_LINE_H
+#ifndef GEOMETRY_LINE_H
 #define GEOMETRY_LINE_H
 #include "geometry/linearobj.h"
 
@@ -348,7 +348,7 @@ class Line : public LinearObject {
 ```
 > geometry/lineseg.h
 ```CPP
-#ifdef GEOMETRY_LINESEGMENT_H
+#ifndef GEOMETRY_LINESEGMENT_H
 #define GEOMETRY_LINESEGMENT_H
 #include "geometry/linearobj.h"
 
