@@ -254,6 +254,7 @@ PersistentSet과 PersistentObject가 전부 애플리케이션에 알려지지�
 
 ## 파생 대신 공통 인자 추출하기
 다음 Line과 LineSegment의 예를 보자.  
+> geometry/line.h
 ```CPP
 #ifdef GEOMETRY_LINE_H
 #define GEOMETRY_LINE_H
@@ -278,6 +279,7 @@ class Line {
 };
 #endif
 ```
+> geometry/lineseg.h
 ```CPP
 #ifdef GEOMETRY_LINESEGMENT_H
 #define GEOMETRY_LINESEGMENT_H
@@ -292,7 +294,79 @@ class lineSegment : public Line {
 ```
 이 두 클래스가 자연스러운 공용 상속의 후보처럼 보이지만, lineSegment는 Line에 선언된 모든 멤버 변수, 멤버 함수를 필요로 한다.  
 그리고 lineSegment에서는 고유의 멤버 함수인 GetLength가 추가되었고 IsOn 함수를 오버리이드한다.  
-하지만 이 두 클래스도 미묘한 방식으로 LSP를 위반하는데, Line의 사용자는 당연히 직선상의 모든 점이 이 안에 포함되기를 기대한다.  
+하지만 이 두 클래스도 미묘한 방식으로 LSP를 위반한다.  
+Line의 사용자는 당연히 직선상의 모든 점이 이 안에 포함되기를 기대한다.  
+위의 Interscept 함수에 의해 반환된 점은 y축을 지나는 선에 있는 점인데, 이 점은 직선상에 있기 때문에,  
+Line의 사용자는 당연히 `IsOn(Intercept()) == true` 임을 기대하지만, LineSegment의 많은 인스턴스에서 이 판정식은 실패한다.  
+이것이 중요한 문제인 이유는, 이것이 **판단**을 내려야 하는 문제이기 때문이다.  
+설계를 고쳐서 완벽하게 LSP에 맞는 설계를 만들려고 하기보다, 다형적인 행위에 있어서 미묘한 결점은 놔두는 것이 좀더 적절한 대응인 경우도 드물게 있다.  
+좋은 엔지니어는 완벽보다 타협이 유리할 때를 알지만, LSP를 가볍게 포기해서는 안된다.  
+기반 클래스가 사용되는 곳에서 서브클래스가 항상 제대로 동작함을 보장하는 것은 복잡성을 다루는 강력한 방법이고,  
+이것을 버린다면 각 서브클래스를 개별적으로 다루어야 한다.  
+Line과 LineSegment의 예 에는 객체지향설계의 중요한 수단을 보여주는 간단한 해결책이 있는데, 만약 두 클래스 모두에 접근할 수 있다면  
+두 클래스의 공통된 원소를 **추출**하여 추상 기반 클래스로 만들 수 있을 것이다.  
+다음은 두 클래스에서 공통 인자를 추출하여 기반 클래스 LinearObject로 만든 것을 보여준다.  
+> geometry/linearobj.h
+```CPP
+#ifdef GEOMETRY_LINE_OBJECT_H
+#define GEOMETRY_LINE_OBJECT_H
+#include "geometry/point.h"
+
+class LinearObject {
+  public :
+    LinearObject(const Point& p1, const Point& p2);
+
+    double GetSlope() const;
+    double GetIntercept() const;
+
+    Point GetP1() const{
+      return itsP1;
+    }
+    Point GetP2() const{
+      return itsP2;
+    }
+    virtual int IsOn(const Point&) const = 0; //추상
+
+  private :
+    Point itsP1;
+    Point itsP2;
+};
+#endif
+```
+> geometry/line.h
+```CPP
+#ifdef GEOMETRY_LINE_H
+#define GEOMETRY_LINE_H
+#include "geometry/linearobj.h"
+
+class Line : public LinearObject {
+  public :
+    Line(const Point& p1, const Point& p2);
+    virtual bool IsOn(const Point &) const
+};
+#endif
+```
+> geometry/lineseg.h
+```CPP
+#ifdef GEOMETRY_LINESEGMENT_H
+#define GEOMETRY_LINESEGMENT_H
+#include "geometry/linearobj.h"
+
+class lineSegment : public LinearObject {
+  public :
+    LineSegment(const Point& p1, const Point& p2);
+
+    double GetLength() const
+    virtual bool IsOn(const Point&) const
+};
+#endif
+```
+LinearObject는 Line과 LineSegment 모두를 표현한다.  
+이 클래스는 두 서브클래스에서 순수 가상 메소드인 IsOn메소드만 제외하고 대부분의 기능성과 데이터멤버를 제공한다.  
+LinearObject의 사용자는 자신이 사용하는 객체의 범위를 안다고 가정할 수 없고, 그러므로 거리낌없이 Line이나 LineSegment중 어떤 것이든 받아들일 수 있다.  
+더욱이 Line 사용자는 LineSegment를 절대 다룰 필요가 없다.  
+공통 인자 추출은 많은 양의 코드가 작성되지 않았을 때 가장 적용하기 편한 설계 수단이며, 공통 인자 추출이 가능하다면  
+추후 이 특성을 필요로 하는 다른 클래스들이 나중에 나타날 가능성 또한 분명히 있다.  
 
 
 ## 휴리스틱과 규정
