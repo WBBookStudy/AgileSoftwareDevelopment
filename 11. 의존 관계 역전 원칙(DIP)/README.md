@@ -5,7 +5,7 @@
 ## 레이어 나누기
 ![KakaoTalk_Photo_2024-02-03-22-00-23](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/1bb51821-38a4-4aef-a94e-1cdda3a0e57d)
 > Policy 레이어가 아래 Utility레이어의 모든 변화에 민감하다. 
-![KakaoTalk_Photo_2024-02-03-22-00-23](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/22633c44-d559-44ef-bc54-d128db158bde)
+![KakaoTalk_Photo_2024-02-03-22-02-24](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/ade5f645-228b-4888-af2b-120fac82f38f)
 > 좀 더 적절한 모델. 하위 수준의 레이어는 상위 수준의 인터페이스에 의존한다. Policy 레이어의 Utility레이어 의존성이 없어진다. 
 
 ## 소유권의 역전 
