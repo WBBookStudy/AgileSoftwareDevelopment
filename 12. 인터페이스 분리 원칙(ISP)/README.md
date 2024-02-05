@@ -28,7 +28,7 @@ class TimerClient {
 어떻게 TimeClient 클래스가 TimedDoor클래스와 통신하여 TimedDoord의 코드에서 제한시간 초과 여부를 통지받게 할 수 있을까?  
 ![KakaoTalk_20240205_200206807](https://github.com/jhkman/AgileSoftwareDevelopment/assets/50142323/e9d566c7-b43c-474b-b355-cb11426f1762)
 위 계층 구조에서는 Door와 TimeDoor가 TimerClient를 상속받게 만든다. 이는 TimerClient가 Timer를 통해 자신을 등록하고 TimeOut메시지를 받을 수 있음을 확실하게 해준다.  
-이 해결은 평범하지만 문제가 없는것은 아닌데, 이 중 심각한 문제는 Door 클래스가 이제 TimerClient에 의존하게 되었다는 점이다.  
+이 해결은 평범하지만 다소의 문제가 있는데, 이 중 심각한 문제는 Door 클래스가 이제 TimerClient에 의존하게 되었다는 점이다.  
 Door의 모든 변형 클래스가 타이머 기능을 필요로 하는 것은 아니다. 타이머 기능을 쓰지않는 Door의 변형 클래스가 만들어진다면, 이 클래스는 TimeOut 메소드의 구현을 퇴화해야 할 것이다.  
 이것은 잠재적 LSP위반이다. 그리고 이 변형 클래스를 사용하는 애플리케이션은 TimerClient 클래스를 사용하지 않더라도 이것을 import 해야 할 것이고,  
 불필요한 복잡성과 중복성의 악취를 풍기며, 유지보수와 재사용성 면에서 문제를 일으킬 수 있다.
