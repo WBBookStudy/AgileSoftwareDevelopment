@@ -25,7 +25,7 @@ class TimerClient {
 ```
 제한시간초과 여부에 대한 정보를 받고 싶은 객체는 Timer의 Register 함수를 호출한다.  
 이 함수의 인자는 제한시간과, 시간이 초과되었을 때 호출되는 TimeOut함수를 포함하는 TimeClient 객체에 대한 포인터가 된다.  
-어떻게 TimeClient 클래스가 TimedDoor클래스와 통신하여 TimedDoord의 코드에서 제한시간 초과 여부를 통지받게 할 수 있을까?  
+어떻게 TimeClient 클래스가 TimedDoor클래스와 통신하여 TimedDoor의 코드에서 제한시간 초과 여부를 통지받게 할 수 있을까?  
 ![KakaoTalk_20240205_200206807](https://github.com/jhkman/AgileSoftwareDevelopment/assets/50142323/e9d566c7-b43c-474b-b355-cb11426f1762)
 위 계층 구조에서는 Door와 TimeDoor가 TimerClient를 상속받게 만든다. 이는 TimerClient가 Timer를 통해 자신을 등록하고 TimeOut메시지를 받을 수 있음을 확실하게 해준다.  
 이 해결은 평범하지만 다소의 문제가 있는데, 이 중 심각한 문제는 Door 클래스가 이제 TimerClient에 의존하게 되었다는 점이다.  
