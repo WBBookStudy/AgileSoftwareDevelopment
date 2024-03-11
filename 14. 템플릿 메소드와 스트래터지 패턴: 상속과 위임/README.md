@@ -143,10 +143,6 @@ BubbleSorter 클래스는 버블 정렬 알고리즘을 이용하여 정수의 �
 BubbleSorter의 sort 메소드는 버블 정렬을 수행하는 알고리즘을 포함한다.  
 swap와 compareAndSwap 이라는 2개의 보조적인 메소드는 정수와 배열의 구체적인 부분을 다루고 정렬 알고리즘이 필요로 하는 동작을 처리한다.  
 템플릿 메소드 패턴을 사용하면 버블 정렬 알고리즘을 따로 떼어 BubbleSorter라는 이름의 추상 기반 클래스에 집어 넣을 수 있다.  
-BubbleSorter는 outOfOrder와 swap 이라는 추상 메소드를 호출하는 sort 함수의 구현을 포함한다.  
-outOfOrder는 배열에서 인접한 2개의 원소를 비교하여 그 원소의 순서가 잘못되어 잇으면 true 값을 반환하는 메소드이고, swap은 배열에서 2새의 인접 원소를 교환하는 메소드이다.  
-sort 메소드는 배열에 대해 알지 못하고, 그 배열에 어떤 현의 객체가 저장되어 있는지도 신경쓰지 않는다.  
-그저 배열의 여러 인덱스에 대해 outOfOrder를 호출하고 그 인덱스가 교환되어야 하는지 아닌지를 판정한다.  
 ```JAVA
 public abstract class BubbleSorter {
   private int operations = 0;
@@ -170,6 +166,10 @@ public abstract class BubbleSorter {
   protected abstract boolean outOfOrder(int index);
 }
 ```
+BubbleSorter는 outOfOrder와 swap 이라는 추상 메소드를 호출하는 sort 함수의 구현을 포함한다.  
+outOfOrder는 배열에서 인접한 2개의 원소를 비교하여 그 원소의 순서가 잘못되어 잇으면 true 값을 반환하는 메소드이고, swap은 배열에서 2개의 인접 원소를 교환하는 메소드이다.  
+sort 메소드는 배열에 대해 알지 못하고, 그 배열에 어떤 현의 객체가 저장되어 있는지도 신경쓰지 않는다.  
+그저 배열의 여러 인덱스에 대해 outOfOrder를 호출하고 그 인덱스가 교환되어야 하는지 아닌지를 판정한다.  
 이제 BubbleSorter로 다른 어떤 종류의 객체든 정렬할 수 있는 간단한 파생 클래스를 만들 수 있다.
 ![KakaoTalk_20240310_231731931](https://github.com/jhkman/AgileSoftwareDevelopment/assets/50142323/ca128929-a698-4614-a51c-b97f9e4bebdf)
 템플릿 메소드 패턴은 객체 지향 프로그래밍에서 고전적인 재사용 형태 중의 하나를 보여준다.  
