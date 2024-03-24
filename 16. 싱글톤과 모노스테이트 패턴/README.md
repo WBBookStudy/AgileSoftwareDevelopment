@@ -80,6 +80,35 @@ public class UserDatabaseSource implements UserDatabase {
 이는 검사, 카운터, 락 등을 UserDatabaseSource에 넣어 접근과 구조에 대한 규정을 강제하기 쉬워진다.  
 
 ## 모노스테이트 패턴
+모노스테이트 패턴은 단일성을 이루기 위한 또 다른 방법으로, 싱글톤 패턴과는 완전히 다른 매커니즘이다.  
+간단하게 정적 데이터 멤버를 사용하여 클래스의 모든 인스턴스의 상태를 보유하는 디자인 패턴이다.
+```JAVA
+import junit.framwork.TestCase;
+
+public class TestMonoState extends TestCase {
+  public TestMonoState(String name) {
+    super(name);
+  }
+
+  public void testInstance() {
+    MonoState m = new MonoState();
+    for(int x = 0;x < 10;x++) {
+      m.setX(x);
+      assertSame(x, m.getX());
+    }    
+  }
+
+  public void testInstancesBehaveAsOne() {
+    MonoState m1 = new MonoState();
+    MonoState m2 = new MonoState();
+    for(int x = 0;x < 10;x++) {
+      m1.setX(x);
+      assertSame(x, m2.getX());
+    }
+  }
+}
+```
+
 ### 모노스테이트가 주는 이점
 ### 모노스테이트의 비용
 ### 동작에 있어서의 모노스테이트
