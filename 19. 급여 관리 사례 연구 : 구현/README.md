@@ -425,25 +425,267 @@ void DeleteEmployeeTransaction::Execute()
 ### 전역변수
 GpayrollDatabase가 전역변수이다. 이게 안좋은가? 여기선 아님. 단 하나의 PayrollDatabase 클래스 인스턴스가 있는데, 이는 넓은 범위에 알려져야 한다.  
 
+## 타임카드, 판매 영수증, 공제액
+
+![KakaoTalk_Photo_2024-04-21-19-12-05](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/ccd2bb36-d0fc-4e25-93cb-5eae48c31c6b)
+
+![KakaoTalk_Photo_2024-04-21-19-12-08](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/f3cd278f-ced5-40ea-803a-42731f954398)
+> 트랜잭션이 PayrollDatabase에서 Employee객체를 받아 그 객체에 있는 PaymentClassification객체를 요청하고, TimeCard 객체를 생성하여 그 PaymentClassification에 더하는 것.
+
+```Cpp
+void PayrollTest :: TestTimeCardTransaction() {
+	cer << "TestTimeCardTransaction" << endl;
+	int empId = 2;
+	AddHourlyEmployee t(empId, "Bill", "Home", 15.25);
+	t.Execute();
+	TestTimeCardTransaction tct(20011031, 8.0, empId);
+	tct.Execute();
+	Employee* e = GpayrollDatabase.GetEmployee(empId);
+	assert(e);
+	PaymentClassification* pc = e -> GetClassification();
+	HourlyClassification* hc = dynamic_cast<HourlyClassification*>(pc);
+	assert(hc);
+	TimeCard* tc = hc -> GetTimeCard(20011031);
+	assert(tc);
+	assertEquals(8.0, tc -> GetHours());
+}
+```
+> 타임카드 객체를 시간제 직원 객체에 더할 수 있는지 검증하는 테스트 케이스
+
+```Cpp
+#ifndef TIMECARD_H
+#define TIMECARD_H
+
+#include "Date.h"
+
+class TimeCard
+{
+ public:
+  virtual ~TimeCard();
+  TimeCard(long date, double hours);
+  Date GetDate() {return itsDate;}
+  double GetHours() {return itsHours;}
+ private:
+  long itsDate;
+  double itsHours;
+};
+#endif
+```
+> 완성된건 아니고 그냥 데이터 클래스. Date클래스가 없어서 long을 사용함.
+
+```Cpp
+#ifndef TIMECARDTRANSACTION_H
+#define TIMECARDTRANSACTION_H
+
+#include "Transaction.h"
+
+class TimeCardTransaction : public Transaction
+{
+ public:
+  virtual ~TimeCardTransaction();
+  TimeCardTransaction(long date, double hours, int empid);
+
+  virtual void Execute();
+
+ private:
+  int itsEmpid;
+  Date itsDate;
+  double itsHours;
+};
+#endif
+```
+
+```Cpp
+#include "TimeCardTransaction.h"
+#include "Employee.h"
+#include "PayrollDatabase.h"
+#include "HourlyClassification.h"
+#include "TimeCard.h"
+#include "Date.h"
+
+extern PayrollDatabase GpayrollDatabase;
+
+TimeCardTransaction::~TimeCardTransaction()
+{
+}
+
+TimeCardTransaction::TimeCardTransaction(long date, double hours, int empid)
+  : itsDate(date)
+  , itsHours(hours)
+  , itsEmpid(empid)
+{
+}
+
+void TimeCardTransaction::Execute()
+{
+  Employee* e = GpayrollDatabase.GetEmployee(itsEmpid);
+  if (e){
+    PaymentClassification* pc = e->GetClassification();
+    if (HourlyClassification* hc = dynamic_cast<HourlyClassification*>(pc)) {
+      hc->AddTimeCard(new TimeCard(itsDate, itsHours));
+    } else
+      throw("Tried to add timecard to non-hourly employee");
+  } else
+    throw("No such employee.");
+}
+```
+> TimeCardTransaction 구현
+
+### [숙제] SalesReceiptTransaction 구현
+![KakaoTalk_Photo_2024-04-21-19-30-12 001jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/1e6e157e-ea54-4878-ba59-4be7e4634c5a)
+![KakaoTalk_Photo_2024-04-21-19-30-13 002jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/e9895b3e-8c46-4d55-8f9c-ccd0455fb96a)
+테스트코드 작성 안함 ㅎㅎ;;
+```Cpp
+#ifndef SALESRECEIPT_H
+#define SALESRECEIPT_H
+
+class SalesReceipt
+{
+ public:
+  virtual ~SalesReceipt();
+  SalesReceipt(long saleDate, double amount);
+  Date GetSaleDate() const {return itsSaleDate;}
+  double GetAmount() const {return itsAmount;}
+ private:
+  Date itsSaleDate;
+  double itsAmount;
+};
+#endif
+```
+
+```Cpp
+#ifndef SALESRECEIPTTRANSACTION_H
+#define SALESRECEIPTTRANSACTION_H
+
+#include "Transaction.h"
+
+class SalesReceiptTransaction : public Transaction
+{
+ public:
+  virtual ~SalesReceiptTransaction();
+  SalesReceiptTransaction(long saleDate, double amount, int empid);
+
+  virtual void Execute();
+
+ private:
+  int itsEmpid;
+  Date itsSaleDate;
+  double itsAmount;
+};
+#endif
+```
+
+```Cpp
+#include "SalesReceiptTransaction.h"
+#include "Employee.h"
+#include "PayrollDatabase.h"
+#include "CommissionedClassification.h"
+#include "SalesReceipt.h"
+
+extern PayrollDatabase GpayrollDatabase;
+
+SalesReceiptTransaction::~SalesReceiptTransaction()
+{
+}
+
+SalesReceiptTransaction::SalesReceiptTransaction(long saleDate, double amount, int empid)
+: itsSaleDate(saleDate)
+, itsAmount(amount)
+, itsEmpid(empid)
+{
+}
+
+void SalesReceiptTransaction::Execute()
+{
+  Employee* e = GpayrollDatabase.GetEmployee(itsEmpid);
+  if (e){
+    PaymentClassification* pc = e->GetClassification();
+    if (CommissionedClassification* cc = dynamic_cast<CommissionedClassification*>(pc)) {
+      cc->AddReceipt(new SalesReceipt(itsSaleDate, itsAmount));
+    } else
+      throw("Tried to add sales receipt to non-commissioned employee");
+  } else
+    throw("No such employee.");
+}
+```
+
+### 조합원의 공제액
+설계가 좀 안맞을 수 있음. 핵심 Employee 객체들은 서로 다른 여러 단체에 가입되어 있을 수도 있지만, 트랜잭션 모델은 모든 소속 단체가 조합이어야 함을 가정한다.  
+이 딜레마를 해결하는 동적 모델은 Employee객체가 포함하는 Affiliation 객체들의 집합을 검색해서 UnionAffiliation객체를 찾는 것. 그리고 그 UnionAffiliation에 ServiceCharge 객체를 더한다.  
+![KakaoTalk_Photo_2024-04-21-19-37-46 001jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/27c3a3cd-b034-46ce-841a-51f2e026e999)
+![KakaoTalk_Photo_2024-04-21-19-37-47 002jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/1bc73e7f-c07f-4eea-9b9c-75b7fa97ae5d)
+```Cpp
+void PayrollTest :: TestAddServiceCharge() {
+	cer << "TestAddServiceCharge" << endl;
+	int empId = 2;
+	AddHourlyEmployee t(empId, "Bill", "Home", 15.25);
+	t.Exceute();
+	Employee* e = GpayrollDatabase.GetEmployee(empId);
+	assert(e);
+	UnionAffiliation* af = new UnionAffiliation(12.5);
+	e -> SetAffiliation(af);
+	int memberId = 86; // Maxwell Smart
+	GpayrollDatabase.AddUnionMember(memberId, e);
+	ServiceChargeTransaction sct(memberId, 20011101, 12.95);
+	sct.Execute();
+	ServiceCharge* sc = af -> GetServiceCharge(20011101);
+	assert(sc);
+	assertEquals(12.95, sc -> GetAmount(), .001);
+}
+```
+
+```Cpp
+#ifndef SERVICECHARGETRANSACTION_H
+#define SERVICECHARGETRANSACTION_H
+
+#include "Transaction.h"
+
+class ServiceChargeTransaction : public Transaction
+{
+ public:
+  virtual ~ServiceChargeTransaction();
+  ServiceChargeTransaction(int memberId, long date, double charge);
+  virtual void Execute();
+
+ private:
+  int itsMemberId;
+  Date itsDate;
+  double itsCharge;
+};
+#endif
+```
+
+```Cpp
+#include "ServiceChargeTransaction.h"
+#include "Employee.h"
+#include "ServiceCharge.h"
+#include "PayrollDatabase.h"
+#include "UnionAffiliation.h"
+
+extern PayrollDatabase GpayrollDatabase;
+
+ServiceChargeTransaction::~ServiceChargeTransaction()
+{
+}
+
+ServiceChargeTransaction::ServiceChargeTransaction(int memberId, long date, double charge)
+:itsMemberId(memberId)
+, itsDate(date)
+, itsCharge(charge)
+{
+}
+
+void ServiceChargeTransaction::Execute()
+{
+  Employee* e = GpayrollDatabase.GetUnionMember(itsMemberId);
+  Affiliation* af = e->GetAffiliation();
+  if (UnionAffiliation* uaf = dynamic_cast<UnionAffiliation*>(af)) {
+    uaf->AddServiceCharge(itsDate, itsCharge);
+  }
+}
+```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## 직원 변경
+은.... 다음주에... ㅎㅎㅎㅎ
 
