@@ -25,6 +25,8 @@ Payday 메소드가 같은 날짜나 같은 지급 주기의 날짜로 여러번
 
 ### 월급을 받는 직원에게 임금 지급하기
 다음 코드에는 2개의 케이스가 나와있는데, 이 테스트는 월급을 받는 직원이 올바르게 임금을 받고 있는지 확인한다.  
+첫번째 테스트 케이스는 직원이 그 달의 마지막 날에 임금을 받는지 확인한다.  
+두번째 테스트 케이스는 그달의 마지막 날이 아니라면 직원이 임금을 받지 않는것을 확인한다.  
 ```Cpp
 void PayrollTest :: TestPaySingleSalariedEmployee() {
   cerr << "TestPaySingleSalariedEmployee" << endl;
@@ -54,8 +56,6 @@ void PayrollTest :: TestPaySingleSalariedEmployeeOnWrongDate() {
   assert(pc == 0);
 }
 ```
-첫번째 테스트 케이스는 직원이 그 달의 마지막 날에 임금을 받는지 확인한다.  
-두번째 테스트 케이스는 그달의 마지막 날이 아니라면 직원이 임금을 받지 않는것을 확인한다.  
 다음 코드는 PaydayTransaction의 Excute() 함수를 보여준다.  
 ```Cpp
 void PaydayTransaction :: Excute() {
