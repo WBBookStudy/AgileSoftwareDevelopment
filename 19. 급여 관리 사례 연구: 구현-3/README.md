@@ -56,7 +56,8 @@ void PayrollTest :: TestPaySingleSalariedEmployeeOnWrongDate() {
   assert(pc == 0);
 }
 ```
-다음 코드는 PaydayTransaction의 Excute() 함수를 보여준다.  
+다음 코드는 PaydayTransaction의 Excute() 함수를 보여주는데, 이 함수는 데이터베이스에 있는 모든 Employee 객체를 순회하고, 각 직원에게 이 트랜잭션의 날짜가 그 직원의 임금 지급 날짜인지 묻는다.  
+만약 그렇다면 해당 직원을 위한 새 지급 수표를 만들고 그 직원에게 수표의 필드를 채우라고 요청한다.  
 ```Cpp
 void PaydayTransaction :: Excute() {
   list<int> empIds;
@@ -75,8 +76,6 @@ void PaydayTransaction :: Excute() {
   }
 }
 ```
-이 함수는 데이터베이스에 있는 모든 Employee 객체를 순회하고, 각 직원에게 이 트랜잭션의 날짜가 그 직원의 임금 지급 날짜인지 묻는다.  
-만약 그렇다면 해당 직원을 위한 새 지급 수표를 만들고 그 직원에게 수표의 필드를 채우라고 요청한다.  
 다음은 MonthlySchedule.cpp의 코드중 일부를 보여준다.  
 이 코드는 인자로 준 날짜가 그 달의 마지막 날인 경우에만 IsPayDate가 true를 반환하도록 구현되어있다.
 ```Cpp
