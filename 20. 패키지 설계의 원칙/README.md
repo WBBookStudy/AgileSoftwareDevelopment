@@ -150,7 +150,45 @@ SDP에 따르면 어떤 패키지의 I 측정값은 그 패키지가 의존하�
 어떻게 해야 최고로 안정적인(I = 0)패키지를, 변화를 견딜 수 있을 정도로 만드나? -> OCP를 지키면 해결됨. -> 추상클래스가 답이다. 
 
 ## 안정된 추상화 원칙(SAP)
-는 내일..
+패키지는 자신이 안정적인 만큼 추상적이기도 해야한다.  
+거꾸로 이 원칙에 따르면 불안정한 패키지는 구체적이어야 한다. -> 쉽게 변경하기위해  
+
+### 추상성 측정법
+
+ - Nc: 패키지 안에 들어 있는 클래스 수
+ - Na: 패키지 안에 들어 있는 추상 클래스 수. 추상 클래스는 적어도 하나 이상의 순수한 인터페이스를 갖고 있으며, 인스턴스화할 수 없는 클래스임
+ - A: 추상성
+![KakaoTalk_Photo_2024-05-24-23-49-30 005jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/50a38bfe-e448-45c3-be7c-ca852d962fe3)
+> A의 범위는 [0,1]. 0은 패키지에 추상 클래스가 하나도 없다는 뜻이고 1은 패키지에 추상클래스밖에 없다는 얘기
+
+### 주계열
+![KakaoTalk_Photo_2024-05-24-23-49-30 006jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/2cea93dd-fc99-43d3-9f7d-b900fea5bbcf)
+> '바람직한' 종류의 패키지를 그래프 위에 점으로 찍어본다면 가장 안정적이고 추상적인 패키지가 (0,1). 가장 불안정하고 구체적인 패키지가 (1,0)
+  
+![KakaoTalk_Photo_2024-05-24-23-49-31 007jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/1863d425-d87c-43c0-b6e0-accf2d5121a9)
+#### 고통의 지역 (0,0)
+일반적으로는 고통의 지역에 들어가면 안됨.. 하지만 어쩔 수 없는 경우가 있다. 예를들면 데이터베이스, 유틸리티 라이브러리  
+#### 쓸모없는 지역 (1,1)
+굉장히 추상적이면서도 이 패키지에 의존하는 녀석들이 없다. 쓸모없음..
+#### 주계열
+안정성에 비해 '너무 추상적'이지도 않고, 추상성에 비해 '너무 불안정'하지도 않다.
+
+### 주계열로부터의 거리
+패키지가 주계열 바로 위나 근처에 있는 것이 바람직 하다면 어떤 패키지가 이상적인 상황으로부터 얼마나 떨어저있는지 측정 가능함.  
+  
+ - D: 거리  
+![KakaoTalk_Photo_2024-05-25-10-30-05](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/b6b80b24-1efb-46c6-8b4c-8f448134745c)  
+범위: [0.~0.707]
+ - D': 정규화된 거리  
+![KakaoTalk_Photo_2024-05-25-10-30-10](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/10920632-82ca-4a17-bf9f-0d5b8ea4a4ef)
+범위 [0,1]. D보다 측정값이 훨씬 편리하다. 0은 패키지가 주계열 바로 위에 있음을 나타내고, 1은 패키지가 주계열에서 가장 멀리 있다는걸 알려준다.  
+  
+![KakaoTalk_Photo_2024-05-24-23-49-31 008jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/77e36493-3d38-4902-892f-01cf191cd257)
+> 통계적으로 측정
+![KakaoTalk_Photo_2024-05-24-23-49-31 009jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/0c242878-f5a2-45cf-9682-be35a95ed50c)
+> D'측정값을 시간 흐름에 따라 기록.  
+-> 이와 같은 방법으로 관리를 하는것도 좋은 방법. 그래프에서 이상한 녀석들이 보이면 원인을 찾는다. 
+
 
 
 
