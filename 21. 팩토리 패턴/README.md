@@ -7,7 +7,8 @@
 이 구체 클래스들에 의존하는것은 문제가 있으며, 대부분의 변경에 영향을 받지 않도록 추상 인터페이스에 의존하는 편이 낫다.  
 팩토리 패턴을 사용하면 추상 인터페이스에만 의존하면서도 구체적 객체(conccrete objcet)들의 인스턴스를 만들 수 있으므로, 한창 개발하느라 생성할 구체 클래스의 변경이 잦을 때 이 패턴이 큰 도움이 된다.  
 ![KakaoTalk_20240602_145529958](https://github.com/jhkman/AgileSoftwareDevelopment/assets/50142323/e1d6616b-360e-49c0-a2f8-6ed2b7ab2a56)
-위 시나리오를 보자. Shape인터페이스에 의존하는 SomeApp라는 클래스가 있는데, 이 SomeApp은 오직 Shape 인터페이스를 통해서면 여러 Shape 인스턴스들을 사용한다.  
+위 시나리오를 보자.  
+Shape인터페이스에 의존하는 SomeApp라는 클래스가 있는데, 이 SomeApp은 오직 Shape 인터페이스를 통해서면 여러 Shape 인스턴스들을 사용한다.  
 불행하게도, SomeApp은 오직 Square와 Circle의 인스턴스를 직접 생성하기 때문에, Square와 Circle에게 의존하게 된다.  
 ![KakaoTalk_20240602_150241954](https://github.com/jhkman/AgileSoftwareDevelopment/assets/50142323/578ba9af-6575-4ebf-856b-897b7909a877)
 위 그림처럼 팩토리 패턴을 적용하면 이 문제점들을 고칠수 있다.  
