@@ -61,6 +61,27 @@ TimeCard와 SalesReceipt를 전용 클래스로 하는 것은 좋은 선택임. 
  - 정규화된 주계열로부터의 거리(D'): 측정값을 [0,1]범위로 정규화한것임. 0은 주계열 위에 위치한 패키지를 나타내고 1은 주계열로부터 가장 먼 패키지를 나타냄  
 ![KakaoTalk_Photo_2024-06-09-15-25-28 010jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/d20e1b63-b60b-4b00-b4c8-adbd34a1bb9f)
 
+## 측정값을 급여 관리 애플리케이션에 적용하기
+는 읽어보시길..
+
+## 객체 팩토리
+Classifications와 ClassificationTransactions가 의존도가 높은 이유는 패키지 안에 있는 클래스들이 인스턴스화 되어야하기 때문임.  
+하지만 이 패키지 안에서 이렇게 생성된 객체들은 거의 대부분 추상 인터페이스를 통해서만 사용된다. 그러므로 각각의 구체적 객체를 만들 필요를 없애면 결합도가 낮아질것이다.  
+팩토리 패턴을 사용하자.  
+
+### TransactionImplementation을 위한 객체 팩토리
+![KakaoTalk_Photo_2024-06-09-16-57-13 001jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/f80f2edb-d997-49dd-b005-c3d636c47ad2)
+이런 팩토리 객체(인터페이스) 하나 만들어서 생성하면 됨...
+
+### 팩토리 초기화
+객체 팩토리를 사용해서 객체를 생상하려면 적절한 구체 팩토리를 가리키도록 초기화가 되어있어야 함.  
+메인 프로그램은 이 일을 하기 최적의 장소임.  
+결국 메인프로그램은 모든 구체적 패키지에 의존성이 걸려있을것이고, 바뀔때마다 릴리즈를 할것이다.  
+![KakaoTalk_Photo_2024-06-09-16-57-13 002jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/35c3cd09-1b3b-4f19-85cc-c3f3d88a153e)
+
+## 응집도의 경계를 다시 고려해보기
+![KakaoTalk_Photo_2024-06-09-15-25-29 011jpeg](https://github.com/WBBookStudy/AgileSoftwareDevelopment/assets/60125719/850dd51e-5f0a-4d3d-a04e-6f4d43b01561)
+너무 복잡해서 이렇게 바꾸기로...  
 
 
 
