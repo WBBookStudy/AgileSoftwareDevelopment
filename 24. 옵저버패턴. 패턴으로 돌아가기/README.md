@@ -96,9 +96,9 @@ public class MockTimeSource implements TimeSource {
 
 ```Java
 public class MockTimeSink implements TimeSink {
-	private func itsHours;
-	private func itsMinutes;
-	private func itsSeconds;
+	private int itsHours;
+	private int itsMinutes;
+	private int itsSeconds;
 
 	public int getSeconds() {
 		return itsSeconds;
@@ -360,6 +360,213 @@ public class MockTimeSource implements TimeSource {
 ```
 ![KakaoTalk_Photo_2024-07-14-07-58-06 007jpeg](https://github.com/user-attachments/assets/81acf675-3cd1-428a-9cc2-52d3540d74fb)
 > 이제 무엇이라도 TimeSource에서 파생될 수 있다. 옵저버들은 갱신하기 위해 notify를 호출하는 것밖에 없다. 
+
+
+#### 정리 시작4
+MockTimeSource를 보면 TimeSource에서 직접 상속을 받고 있다. 이 말은 Clock도 TimeSource에서 파생되어야 할 것이라는 말임.  
+Clock이 옵저버 등록이나 갱신에 의존해야 할 필요는 없다.. Clock은 단지 시간에 대해서만 아는 클래스임  
+
+```Java
+public interface TimeSource {
+	public void registerObserver(ClockObserver observer);
+}
+```
+
+```Java
+public class TimeSourceImplementation {
+	private Vector itsObservers = new Vector();
+
+	public void notify(int hours, int minutes, int seconds) {
+		Iterator i = itsObservers.Iterator();
+		while (i.hasNext()) {
+			ClockObserver observer = (ClockObserver) i.next();
+			observer.update(hours, minutes, seconds);
+		}
+	}
+
+	public void registerObserver(ClockObserver observer) {
+		itsObservers.add(observer);
+	}
+}
+```
+
+```Java
+
+public class MockTimeSource implements TimeSource {
+
+	TimeSourceImplementation tsImp = new TimeSourceImplementation();
+
+	public void registerObserver(ClockObserver observer) {
+		tsImp.registerObserver(observer);
+	}
+
+	public void setTime(int hours, int minutes, int seconds) {
+		notify(hours, minutes, seconds);
+	}
+
+}
+```
+![KakaoTalk_Photo_2024-07-14-07-58-06 009jpeg](https://github.com/user-attachments/assets/4dacb9c9-07f1-4dfd-a17c-8bd217a2f98f)
+> MockTimeSource의 registerObserver에 대한 모든 호출이 TimeSourceImplementation로 위임됨  
+> 이제 MockTimeSource가 어떤 클래스로부터도 상속받지 않는다.  
+> 이러면 Clock이 등록과 갱신같은 일에 의존하는 문제를 피할 수 있다. 
+
+![KakaoTalk_Photo_2024-07-14-07-58-07 010jpeg](https://github.com/user-attachments/assets/044380f1-44da-497b-89b1-7742b19a444c)
+
+
+#### 정리 시작5
+TimeSource의 클래스의 이름이 적절하지 않아졌다. 등록 및 갱신과 관계 있는 이름(옵저버 패턴에서는 Subject라고 함)으로 바꾸자.  
+
+![KakaoTalk_Photo_2024-07-14-07-58-07 011jpeg](https://github.com/user-attachments/assets/6ad2d9fc-40d6-464b-959f-91b2e3fab7d0)
+
+```Java
+public class ObserverTest {
+    private MockTimeSource source;
+    private MockTimeSink sink;
+
+    @Before
+    public void setUp() throws Exception {
+        source = new MockTimeSource();
+        sink = new MockTimeSink(source);
+        source.registerObserver(sink);
+    }
+
+    @Test
+    public void testTimeChange() throws Exception {
+        source.setTime(3, 4, 5);
+        assertSinkEquals(sink, 3, 4, 5);
+
+        source.setTime(7, 8, 9);
+        assertSinkEquals(sink, 7, 8, 9);
+    }
+
+    private void assertSinkEquals(MockTimeSink sink, int hours, int minutes, int seconds) {
+        assertThat(sink.getHours(), is(hours));
+        assertThat(sink.getMinutes(), is(minutes));
+        assertThat(sink.getSeconds(), is(seconds));
+    }
+
+    @Test
+    public void testMultipleSinks() throws Exception {
+        MockTimeSink sink2 = new MockTimeSink(source);
+        source.registerObserver(sink2);
+
+        source.setTime(3, 4, 5);
+        assertSinkEquals(sink, 3, 4, 5);
+        assertSinkEquals(sink2, 3, 4, 5);
+
+    }
+}
+```
+```Java
+public interface Observer {
+	public void update();
+}
+```
+
+```Java
+public class Subject {
+	private Vector itsObservers = new Vector();
+
+	// public void notify(int hours, int minutes, int seconds) {
+	// 	Iterator i = itsObservers.Iterator();
+	// 	while (i.hasNext()) {
+	// 		ClockObserver observer = (ClockObserver) i.next();
+	// 		observer.update(hours, minutes, seconds);
+	// 	}
+	// }
+	protected void notifyObservers() {
+		Iterator i = itsObservers.Iterator();
+		while (i.hasNext()) {
+			ClockObserver observer = (ClockObserver) i.next();
+			observer.update();
+		}
+	}
+
+	public void registerObserver(ClockObserver observer) {
+		itsObservers.add(observer);
+	}
+}
+```
+
+```Java
+public interface TimeSource {
+	// public void registerObserver(ClockObserver observer);
+	public int getHours();
+	public int getMinutes();
+	public int getSeconds();
+}
+```
+
+```Java
+public class MockTimeSource extends Subject implements TimeSource {
+	private int itsHours;
+	private int itsMinutes;
+	private int itsSeconds;
+
+	public void setTime(int hours, int minutes, int seconds) {
+		itsHours = hours;
+		itsMinutes = minutes;
+		itsSeconds = seconds;
+		notifyObservers();
+	}
+
+	public int getHours() {
+		return itsHours;
+	}
+
+	public int getMinutes() {
+		return itsMinutes;
+	}
+
+	public int getSeconds() {
+		return itsSeconds;
+	}
+
+}
+```
+
+```Java
+public class MockTimeSink implements TimeSink {
+	private int itsHours;
+	private int itsMinutes;
+	private int itsSeconds;
+	private TimeSource itsSource;
+
+	public MockTimeSink(TimeSource source) {
+		itsSource = source;
+	}
+
+	public int getSeconds() {
+		return itsSeconds;
+	}
+
+	public int getMinutes() {
+		return itsMinutes;
+	}
+
+	public int getHours() {
+		return itsHours;
+	}
+
+	// public void setTime(int hours, int minutes, int seconds) {
+	// 	itsHours = hours;
+	// 	itsMinutes = minutes;
+	// 	itsSeconds = seconds;
+	// }
+
+	public void update() {
+		itsHours = itsSource.getHours();
+		itsMinutes = itsSource.getMinuites();
+		itsSeconds = itsSource.getSeconds();
+	}
+
+}
+```
+
+
+
+
 
 
 
